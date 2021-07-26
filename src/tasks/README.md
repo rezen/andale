@@ -1,0 +1,2 @@
+- Some tasks require elevated access
+  - Can read all data

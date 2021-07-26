@@ -1,0 +1,21 @@
+---
+version: 0.1
+executor: local
+
+# For ecs/lambda
+aws:
+  profile: x
+  region: us-west-2
+  subnets: 
+    - subnet-xxxxxxxxxxxx
+    - subnet-yyyyyyyyyyyy
+  ecs_cluster: x
+
+digital_ocean: {}
+
+handler:
+  on_error:
+    action: notify
+    params:
+      provider: slack
+      hook_url: http://xxxx.xxxxx.com/xxxxxxx
