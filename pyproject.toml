@@ -5,11 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 
-packages = [
-    { package = "andale", from = "andale" }
-]
 
 dependencies = [
+  "andale",
     "python-whois==0.7.3",
     "python-libnmap==0.7.2",
     "dnspython[trio]",
@@ -35,3 +33,18 @@ dev-dependencies = [
   "pytest-asyncio"
 ]
 
+
+[tool.uv.sources]
+andale = { path = "andale" }
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+pythonpath = "src"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_mode = "auto" 
