@@ -1,18 +1,29 @@
 import json
 import sys
 import dns.asyncquery
-from dns.resolver import dns
+import dns.asyncresolver
+import dns.message
+
 import dns.rdatatype
 import dns.rdataclass
 import asyncio
+from pydantic import BaseModel, Field, constr
+from typing import Literal, Dict, List
 
 TAGS = ['dns', 'domain', 'network']
 
-RECORD_TYPES = [
+RECORD_TYPES = Literal[
     "a", "cname", "mx",
     "ns", "ptr", "soa", "srv", 
     "txt", "any", "caa"
 ]
+
+
+class Input(BaseModel):
+    domain: str = Field(pattern=r'^[a-zA-Z0-9.-]+$') 
+    rtype:  RECORD_TYPES = Field(default='a')
+    name_server: str = Field(pattern=r'^[a-zA-Z0-9.-]+$', default="8.8.8.8")
+
 
 SCHEMA = r"""
 domain:

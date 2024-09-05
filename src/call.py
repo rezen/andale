@@ -2,7 +2,7 @@ import re
 import os
 import json 
 import asyncio
-from src.shared.template import render_recursive, eval_conditional
+from andale.shared.template import render_recursive, eval_conditional
 import timeflake
 import pathlib
 from time import time
@@ -15,7 +15,7 @@ import services.metrics as metrics
 
 from shared.mods import hooks
 from shared.schema import validate_params, validate_schema
-from src.models import TaskModel
+from andale.models import TaskModel
 from services.cache import cache
 
 class Task(object):

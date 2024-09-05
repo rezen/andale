@@ -1,0 +1,37 @@
+[project]
+name = "andale"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+
+packages = [
+    { package = "andale", from = "andale" }
+]
+
+dependencies = [
+    "python-whois==0.7.3",
+    "python-libnmap==0.7.2",
+    "dnspython[trio]",
+    "playwright",
+    "timeflake",
+    "orjson",
+    "msgpack",
+    "celery==5.0.5",
+    "gevent",
+    "flower",
+    "aiodocker",
+    "ruamel.yaml==0.17.5",
+    "jsonschema==3.2.0",
+    "ipwhois==1",
+    "jmespath",
+    "jinja2_ansible_filters",
+    "peewee",
+    "pydantic"
+]
+
+dev-dependencies = [
+  "pytest",
+  "pytest-asyncio"
+]
+

@@ -3,10 +3,12 @@ import asyncio
 import hashlib
 from urllib.parse import urlparse
 from playwright.async_api import async_playwright
-from shared.mods import hooks
+from andale.shared.mods import hooks
+from pydantic import BaseModel, HttpUrl, PositiveInt, Field
+from typing import Literal, Dict, List
 
 TAGS = ['http', 'network']
-VALID_METHODS =  [
+VALID_METHODS = Literal[
     'type',
     'dblclick',
     'click',
@@ -16,6 +18,27 @@ VALID_METHODS =  [
     'fill',
     'hover',
 ]
+
+class Action(BaseModel):
+    id: str
+    args: List[str]
+    method: VALID_METHODS 
+    record: str
+
+class Input(BaseModel):
+    url: HttpUrl
+    method:  Literal[
+        'get', 'post', 'delete', 'put', 'head'
+    ] = Field(default="get")
+    port: PositiveInt
+    data: str = ''
+    headers: Dict[str, str] = Field(default={})
+    params: Dict[str, str] = Field(default={})
+    actions: List[Action] = Field(default=[])
+    wait_for: str = None
+
+
+
 
 SCHEMA = r"""
 url:
