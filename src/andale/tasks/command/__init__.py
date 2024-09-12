@@ -12,7 +12,7 @@ from shared.mods import hooks
 
 TAGS = ['command']
 
-async def _record_process(process, output_dir, attr):  
+async def _record_process(ctx, process, output_dir, attr):  
     stream = getattr(process, attr)
     file = f"{attr}.log"
     async with aiofiles.open(os.path.join(output_dir, file), 'wb') as fh:
@@ -21,7 +21,7 @@ async def _record_process(process, output_dir, attr):
             if line:
                 print(line)
                 # @todo hook for 
-                hooks.action(f"process.{attr}.readline", process)
+                ctx.hooks.action(f"process.{attr}.readline", process)
                 await fh.write(line)
             else:
                 break
@@ -39,9 +39,9 @@ timeout:
 input:
     type: string
 """
-async def task_async(self, exec=[], env={}, timeout=None, input=None):
+async def task_async(ctx, exec=[], env={}, timeout=None, input=None):
     env = {**os.environ.copy(), **env}
-    output_dir = self.workspace_path
+    output_dir = ctx.workspace_path
     pid = None
     
     # @todo check if command exists
@@ -67,8 +67,8 @@ async def task_async(self, exec=[], env={}, timeout=None, input=None):
     hooks.action(f"process.started", process)
 
     await asyncio.wait([
-        _record_process(process, output_dir, 'stdout'),
-        _record_process(process, output_dir, 'stderr')
+        _record_process(ctx, process, output_dir, 'stdout'),
+        _record_process(ctx, process, output_dir, 'stderr')
     ])
 
     exit_code = await process.wait()

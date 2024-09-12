@@ -46,7 +46,7 @@ mount:
 
 
 def task(
-    self,
+    ctx,
     image=None,
     command=None,
     entrypoint=None,
@@ -56,8 +56,8 @@ def task(
     files={},
     mount={},
 ):
-    task_id = self.id
-    workspace = self.workspace_path
+    task_id = ctx.id
+    workspace = ctx.workspace_path
     # @todo some containers have http endpoints for status/metrics
     config = {
         "image": image,
@@ -100,7 +100,7 @@ def task(
     cluster_id = swarm.get("Cluster", {}).get("ID")
 
     try:
-        config = hooks.filter("docker.config", config)
+        config = ctx.hooks.filter("docker.config", config)
         container = client.containers.create(**config)
     except Exception as err:
         return {"error": err}

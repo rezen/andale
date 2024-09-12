@@ -75,7 +75,7 @@ RETURN = r"""
 """
 
 
-async def task(self, hosts=[], ports=[22, 80, 443], top_ports=None, scripts=[]):
+async def task(ctx, hosts=[], ports=[22, 80, 443], top_ports=None, scripts=[]):
     command = [
         "nmap",
         "-sV",
@@ -103,11 +103,11 @@ async def task(self, hosts=[], ports=[22, 80, 443], top_ports=None, scripts=[]):
             command = command + [f"--script={name}"]
     command = command + ["-oX", "-"]
 
-    response = await exec(self, command)
+    response = await exec(ctx, command)
     response.pop("stdout", None)
     response.pop("stderr", None)
 
-    workspace = self.workspace_path
+    workspace = ctx.workspace_path
     with io.open(os.path.join(workspace, "stdout.log"), "r") as fh:
         data = NmapParser.parse(fh.read())
 

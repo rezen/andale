@@ -6,4 +6,4 @@ import pytest
 async def test_task():
     res = await task({}, "sendgrid.com", "txt")
     assert len(res) > 1
-    assert res[0]['type'] == "TXT"
+    assert res[0]["type"] == "TXT"

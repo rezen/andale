@@ -31,7 +31,7 @@ params:
 
 
 async def task(
-    self,
+    ctx,
     url=None,
     method="get",
     port=None,
@@ -54,8 +54,8 @@ async def task(
 
             text = await response.text()
             hash_of_body = "md5:" + hashlib.md5(str(text).encode()).hexdigest()
-            # body_ref = self.storage.put("http." + hash_of_body, text)
-            # self.artifacts.add_reference(body_ref)
+            # body_ref = ctx.storage.put("http." + hash_of_body, text)
+            # ctx.artifacts.add_reference(body_ref)
             return {
                 "method": method,
                 "path": url.path,

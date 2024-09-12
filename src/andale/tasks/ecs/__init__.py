@@ -4,7 +4,7 @@ import json
 
 
 # @todo wrapper has callback
-def task(self, name, payload, **kwargs):
+def task(ctx, name, payload, **kwargs):
     region = kwargs.get("region", "us-west-2")
     response = boto3.client("sts").get_caller_identity()
     user_id = response.get("UserId").split(":").pop()

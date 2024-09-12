@@ -17,7 +17,6 @@ RECORD_TYPES = Literal[
 ]
 
 
-
 class Input(BaseModel):
     domain: str = Field(pattern=r"^[a-zA-Z0-9.-]+$")
     rtype: RECORD_TYPES = Field(default="a")
@@ -50,11 +49,11 @@ name_server:
 """
 
 
-async def task(self, domain, rtype="a", name_server="8.8.8.8"):
+async def task(ctx, domain, rtype="a", name_server="8.8.8.8"):
     rtype = rtype.lower()
     # A nicetie to get all the records
     if rtype == "all":
-        tasks = [task(self, domain, o, name_server) for o in get_args(RECORD_TYPES)]
+        tasks = [task(ctx, domain, o, name_server) for o in get_args(RECORD_TYPES)]
         return [r for r in await asyncio.gather(*tasks) if r]
 
     if rtype.lower() not in get_args(RECORD_TYPES):

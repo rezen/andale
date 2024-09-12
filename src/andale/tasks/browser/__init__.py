@@ -85,7 +85,7 @@ wait_for:
 
 
 async def task_async(
-    self,
+    ctx,
     url=None,
     method="get",
     port=None,
@@ -148,7 +148,7 @@ async def task_async(
             except Exception as err:
                 print(err)
 
-        hooks.action("browser.page.ready", page)
+        ctx.hooks.action("browser.page.ready", page)
 
         body = await page.evaluate("document.body.innerHTML", force_expr=True)
         # @todo save to central store based on response hashs
@@ -168,7 +168,7 @@ async def task_async(
             if response
             else None
         )
-        # body_ref = self.storage.put("http." + hash_of_body, text)
+        # body_ref = ctx.storage.put("http." + hash_of_body, text)
 
         data = {
             "title": await page.title(),
@@ -194,7 +194,7 @@ async def task_async(
                 "debug": debug_logs,
             },
         }
-        hooks.action("browser.before.close", browser)
+        ctx.hooks.action("browser.before.close", browser)
 
         await browser.close()
 
