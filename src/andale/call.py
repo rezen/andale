@@ -3,6 +3,8 @@ import os
 import json 
 import asyncio
 from andale.shared.template import render_recursive, eval_conditional
+from andale.shared.mods import Plugin
+
 import timeflake
 import pathlib
 from time import time
@@ -122,6 +124,14 @@ class Workspace(object):
         args[0] = os.path.join(self.path, args[0])
         return open(*args)
 
+    def put(self, path, data):
+        flag = "w+"
+        if isinstance(data, bytes):
+            flag = "wb+"
+        with self.open(path, flag) as fh:
+            fh.write(data)
+
+        
     @property
     def path(self):
         return os.path.abspath(os.path.join(self._directory, '_task', self._id))
@@ -135,6 +145,7 @@ class Context(object):
     def __init__(self, id, workspace):
         self._id = id
         self.workspace = workspace
+        self.hooks = Plugin()
 
 
     def setup(self):
@@ -161,7 +172,7 @@ def build_ctx():
     # @todo what if you want to re-use a workspace?
     # So for example, you may want all wpscan results to live in the same directory
     # workspace/{{ id }}/
-    ctx =  Context.create()
+    ctx = Context.create()
     ctx.setup()
     return ctx
 
@@ -460,7 +471,7 @@ def todo_task(config, workflow, vars={}, env=None):
     if not loop:
         task_data = render_recursive(config, {
             'params': vars,
-            'steps'
+            'steps': []
         })
         print(task_data)
 
@@ -610,7 +621,7 @@ def flow(vars, params, steps):
 print("------------------")
 flow(
     {
-        "domain": "ahermosilla.com",
+        "domain": "samsara.com",
     },
     {
         "domain": {
@@ -634,7 +645,7 @@ flow(
                 'actions': [
                     {
                         'method': 'evaluate',
-                        'record': 'test',
+                        'record': 'window_keys',
                         'args': [
                             '() => Object.keys(window).filter(k => k.indexOf("on") !== 0)'
                         ],

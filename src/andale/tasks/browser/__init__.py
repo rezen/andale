@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 from andale.shared.mods import hooks
 from pydantic import BaseModel, HttpUrl, PositiveInt, Field
-from typing import Literal, Dict, List
+from typing import Literal, Dict, List, get_args
 
 TAGS = ["http", "network"]
 VALID_METHODS = Literal[
@@ -85,7 +85,7 @@ wait_for:
 
 
 async def task_async(
-    ctx,
+    self,
     url=None,
     method="get",
     port=None,
@@ -97,7 +97,7 @@ async def task_async(
     data = {}
     counter = 0
     debug_logs = []
-    async with async_playwright() as p:
+    async with async_playwright() as p: 
         browser = await p.firefox.launch()
         page = await browser.new_page()
 
@@ -121,7 +121,8 @@ async def task_async(
 
             try:
                 body = await response.body()
-            except:
+            except Exception as err:
+                print(err)
                 return
 
             async with lock:
@@ -131,14 +132,15 @@ async def task_async(
 
         page.on("response", on_response)
 
-        response = await page.goto(url)
+        response = await page.goto(url, wait_until='domcontentloaded', timeout=10000)
+        await page.wait_for_timeout(5000)
 
         record_data = {}
         for action in actions:
             id = action.get("id")
             fn = action.get("method")
             args = action.get("args", [])
-            if fn not in VALID_METHODS:
+            if fn not in get_args(VALID_METHODS) :
                 continue
 
             try:
@@ -146,11 +148,11 @@ async def task_async(
                 if "record" in action:
                     record_data[action["record"]] = d
             except Exception as err:
-                print(err)
+                pass
 
-        ctx.hooks.action("browser.page.ready", page)
+        self.hooks.action("browser.page.ready", page)
 
-        body = await page.evaluate("document.body.innerHTML", force_expr=True)
+        body = await page.evaluate("document.body.innerHTML")
         # @todo save to central store based on response hashs
         request = response.request if response else None
         pointer = request.redirected_from if request else None
@@ -168,7 +170,10 @@ async def task_async(
             if response
             else None
         )
-        # body_ref = ctx.storage.put("http." + hash_of_body, text)
+        self.workspace.put("http." + hash_of_body, body)
+        # screenshot = await page.screenshot(full_page=True)
+        # self.workspace.put("screenshot_" + hash_of_body + ".png", screenshot)
+
 
         data = {
             "title": await page.title(),
@@ -189,12 +194,12 @@ async def task_async(
             "meta": {
                 "driver": "playwright",
                 "requests": counter,
-                "hosts": list(hosts),
+                "hosts": list(sorted(hosts)),
                 "weight": page_weight,
                 "debug": debug_logs,
             },
         }
-        ctx.hooks.action("browser.before.close", browser)
+        self.hooks.action("browser.before.close", browser)
 
         await browser.close()
 
